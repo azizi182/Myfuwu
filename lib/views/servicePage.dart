@@ -336,7 +336,7 @@ class _MyServicePageState extends State<MyServicePage> {
 
     http
         .post(
-          Uri.parse('${MyConfig.baseUrl}/myfuwu/api/insert_service.php'),
+          Uri.parse('${MyConfig.baseUrl}/api/insert_service.php'),
           body: {
             'userid': widget.user?.userId,
             'title': title,

@@ -235,7 +235,7 @@ class _LoginpageState extends State<Loginpage> {
     }
     http
         .post(
-          Uri.parse('${MyConfig.baseUrl}/myfuwu/api/login_user.php'),
+          Uri.parse('${MyConfig.baseUrl}/api/login_user.php'),
           body: {'email': email, 'password': password},
         )
         .then((response) {
@@ -262,7 +262,7 @@ class _LoginpageState extends State<Loginpage> {
               // Navigate to home page or dashboard
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => Mainpage(user: user)),
+                MaterialPageRoute(builder: (context) => MainPage(user: user)),
               );
             } else {
               if (!mounted) return;

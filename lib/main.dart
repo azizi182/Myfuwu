@@ -73,6 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void autologin() {
     SharedPreferences.getInstance().then((prefs) {
       bool? rememberMe = prefs.getBool('rememberMe');
+
       if (rememberMe != null && rememberMe) {
         email = prefs.getString('email') ?? 'NA';
         password = prefs.getString('password') ?? 'NA';
@@ -91,6 +92,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 var jsonResponse = response.body;
                 // print(jsonResponse);
                 var resarray = jsonDecode(jsonResponse);
+
                 if (resarray['status'] == 'success') {
                   //print(resarray['data'][0]);
                   User user = User.fromJson(resarray['data'][0]);
@@ -100,7 +102,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Mainpage(user: user),
+                        builder: (context) => MainPage(user: user),
                       ),
                     );
                   });
@@ -119,7 +121,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Mainpage(user: user),
+                        builder: (context) => MainPage(user: user),
                       ),
                     );
                   });
@@ -139,7 +141,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Mainpage(user: user),
+                      builder: (context) => MainPage(user: user),
                     ),
                   );
                 });
@@ -159,7 +161,7 @@ class _SplashScreenState extends State<SplashScreen> {
           );
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => Mainpage(user: user)),
+            MaterialPageRoute(builder: (context) => MainPage(user: user)),
           );
         });
       }
