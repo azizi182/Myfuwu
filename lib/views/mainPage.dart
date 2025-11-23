@@ -6,6 +6,7 @@ import 'package:myfuwu_project/models/myservice.dart';
 import 'package:myfuwu_project/views/ipAddress.dart';
 import 'package:myfuwu_project/views/loginpage.dart';
 import 'package:myfuwu_project/models/user.dart';
+import 'package:myfuwu_project/views/ownServicePage.dart';
 import 'package:myfuwu_project/views/servicepage.dart';
 
 class MainPage extends StatefulWidget {
@@ -67,6 +68,7 @@ class _MainPageState extends State<MainPage> {
                               width: 60,
                               height: 60,
                               child: Image.network(
+                                //another way we can catch network image
                                 '${MyConfig.baseUrl}/assets/services/service_${listServices[index].serviceId}.PNG',
                                 fit: BoxFit.cover,
                               ),
@@ -87,7 +89,9 @@ class _MainPageState extends State<MainPage> {
                               ],
                             ),
                             trailing: IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                //action kt sini
+                              },
                               icon: Icon(Icons.arrow_forward_ios),
                             ),
                           ),
@@ -125,6 +129,64 @@ class _MainPageState extends State<MainPage> {
         },
         child: Icon(Icons.add),
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              accountName: Text(widget.user?.userName.toString() ?? 'Guest'),
+              accountEmail: Text(widget.user?.userEmail.toString() ?? 'Guest'),
+              currentAccountPicture: CircleAvatar(
+                radius: 12,
+                backgroundImage: AssetImage('assets/myfuwu_logo.jpg'),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.home),
+              title: Text('Home'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+
+            ListTile(
+              leading: Icon(Icons.add_box_outlined),
+              title: Text('My services'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Ownservicepage(user: widget.user),
+                  ),
+                );
+              },
+            ),
+
+            ListTile(
+              leading: Icon(Icons.login),
+              title: Text('Login'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Loginpage()),
+                );
+              },
+            ),
+
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('Profile'),
+              onTap: () {},
+            ),
+
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -148,6 +210,7 @@ class _MainPageState extends State<MainPage> {
         });
         // print(jsonResponse);
       } else {
+        //print (response.statusCode);
         setState(() {
           status = "Failed to load services";
         });
