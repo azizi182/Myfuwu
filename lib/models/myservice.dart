@@ -8,6 +8,12 @@ class MyService {
   String? serviceRate;
   String? serviceDate;
 
+  //user info
+  String? userName;
+  String? userEmail;
+  String? userPhone;
+  String? userRegdate;
+
   MyService({
     this.serviceId,
     this.userId,
@@ -17,6 +23,11 @@ class MyService {
     this.serviceType,
     this.serviceRate,
     this.serviceDate,
+
+    this.userName,
+    this.userEmail,
+    this.userPhone,
+    this.userRegdate,
   });
 
   MyService.fromJson(Map<String, dynamic> json) {
@@ -28,6 +39,12 @@ class MyService {
     serviceType = json['service_type'];
     serviceRate = json['service_rate'];
     serviceDate = json['service_date'];
+
+    // user field
+    userName = json['user_name'];
+    userEmail = json['user_email'];
+    userPhone = json['user_phone'];
+    userRegdate = json['user_regdate'];
   }
 
   Map<String, dynamic> toJson() {
@@ -40,6 +57,12 @@ class MyService {
     data['service_type'] = serviceType;
     data['service_rate'] = serviceRate;
     data['service_date'] = serviceDate;
+
+    // user field
+    data['user_name'] = userName;
+    data['user_email'] = userEmail;
+    data['user_phone'] = userPhone;
+    data['user_regdate'] = userRegdate;
     return data;
   }
 }

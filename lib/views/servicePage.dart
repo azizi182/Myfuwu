@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
@@ -26,6 +28,7 @@ class _MyServicePageState extends State<MyServicePage> {
   String selecteddistrict = 'Kubang Pasu';
   File? image;
   late double height, width;
+  Uint8List? webImage;
 
   List<String> myservices = [
     'Cleaning',
@@ -216,59 +219,79 @@ class _MyServicePageState extends State<MyServicePage> {
 
   Future<void> openCamera() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(
-      source: ImageSource.camera,
-      maxHeight: 800,
-      maxWidth: 800,
-    );
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
-      image = File(pickedFile.path);
-      cropImage();
+      if (kIsWeb) {
+        webImage = await pickedFile.readAsBytes();
+        setState(() {});
+      } else {
+        image = File(pickedFile.path);
+        cropImage();
+      }
     }
   }
 
   Future<void> openGallery() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(
-      source: ImageSource.gallery,
-      maxHeight: 800,
-      maxWidth: 800,
-    );
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      image = File(pickedFile.path);
-      cropImage();
+      if (kIsWeb) {
+        webImage = await pickedFile.readAsBytes();
+        setState(() {});
+      } else {
+        image = File(pickedFile.path);
+        cropImage(); // only for mobile
+      }
     }
   }
 
   Future<void> cropImage() async {
+    if (kIsWeb) return; // skip cropping on web
     CroppedFile? croppedFile = await ImageCropper().cropImage(
       sourcePath: image!.path,
-      aspectRatio: const CropAspectRatio(ratioX: 5, ratioY: 3),
+      aspectRatio: CropAspectRatio(ratioX: 5, ratioY: 3),
       uiSettings: [
         AndroidUiSettings(
           toolbarTitle: 'Please Crop Your Image',
           toolbarColor: Colors.deepPurple,
           toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false,
         ),
         IOSUiSettings(title: 'Cropper'),
       ],
     );
+
     if (croppedFile != null) {
-      File imageFile = File(croppedFile.path);
-      image = imageFile;
+      image = File(croppedFile.path);
       setState(() {});
     }
   }
 
   void showSubmitDialog() {
-    if (titleController.text.isEmpty) {
+    if (titleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Please enter title"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    if (!kIsWeb && image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please select an image"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (kIsWeb && webImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please select an image"),
           backgroundColor: Colors.red,
         ),
       );
@@ -284,6 +307,7 @@ class _MyServicePageState extends State<MyServicePage> {
       );
       return;
     }
+
     if (hourlyrateController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -329,8 +353,15 @@ class _MyServicePageState extends State<MyServicePage> {
   }
 
   void submitService() {
+    String base64image = "";
+    if (kIsWeb) {
+      base64image = base64Encode(webImage!);
+    } else {
+      base64image = base64Encode(image!.readAsBytesSync());
+    }
+
     String title = titleController.text.trim();
-    String base64image = base64Encode(image!.readAsBytesSync());
+
     String description = descriptionController.text.trim();
     String hourlyrate = hourlyrateController.text.trim();
 

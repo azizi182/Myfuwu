@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myfuwu_project/models/user.dart';
+import 'package:myfuwu_project/shared/animated_route.dart';
 import 'package:myfuwu_project/views/loginPage.dart';
+import 'package:myfuwu_project/views/mainPage.dart';
 import 'package:myfuwu_project/views/ownServicePage.dart';
 
 class Mydrawer extends StatefulWidget {
@@ -30,7 +32,10 @@ class _MydrawerState extends State<Mydrawer> {
             leading: Icon(Icons.home),
             title: Text('Home'),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                AnimatedRoute.slideFromRight(MainPage(user: widget.user)),
+              );
             },
           ),
 
@@ -38,13 +43,17 @@ class _MydrawerState extends State<Mydrawer> {
             leading: Icon(Icons.add_box_outlined),
             title: Text('My services'),
             onTap: () {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => Ownservicepage(user: widget.user),
-                ),
+                AnimatedRoute.slideFromRight(Ownservicepage(user: widget.user)),
               );
             },
+          ),
+
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text('Profile'),
+            onTap: () {},
           ),
 
           ListTile(
@@ -56,12 +65,6 @@ class _MydrawerState extends State<Mydrawer> {
                 MaterialPageRoute(builder: (context) => Loginpage()),
               );
             },
-          ),
-
-          ListTile(
-            leading: Icon(Icons.person),
-            title: Text('Profile'),
-            onTap: () {},
           ),
 
           ListTile(
