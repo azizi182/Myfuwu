@@ -7,7 +7,6 @@ import 'package:myfuwu_project/shared/mydrawer.dart';
 import 'package:myfuwu_project/views/ipAddress.dart';
 import 'package:myfuwu_project/views/loginpage.dart';
 import 'package:myfuwu_project/models/user.dart';
-import 'package:myfuwu_project/views/ownServicePage.dart';
 import 'package:myfuwu_project/views/servicepage.dart';
 
 import 'package:intl/intl.dart';
@@ -28,6 +27,9 @@ class _MainPageState extends State<MainPage> {
   DateFormat formatter = DateFormat('dd/MM/yyyy hh:mm a');
   late double screenWidth, screenHeight;
 
+  int numofpage = 1;
+  int curpage = 1;
+  int numofresult = 0;
   @override
   void initState() {
     super.initState();
@@ -125,7 +127,7 @@ class _MainPageState extends State<MainPage> {
                                           0.22, // balanced aspect ratio
                                       color: Colors.grey[200],
                                       child: Image.network(
-                                        '${MyConfig.baseUrl}/assets/services/service_${listServices[index].serviceId}.PNG',
+                                        '${MyConfig.baseUrl}/assets/services/service_${listServices[index].serviceId}.png',
                                         fit: BoxFit.cover,
                                         errorBuilder:
                                             (context, error, stackTrace) {
@@ -218,6 +220,30 @@ class _MainPageState extends State<MainPage> {
                         },
                       ),
                     ),
+
+              SizedBox(
+                height: screenHeight * 0.05,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: numofpage,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    var color = (curpage - 1) == index
+                        ? Colors.red
+                        : Colors.black;
+                    return TextButton(
+                      onPressed: () {
+                        curpage = index + 1;
+                        loadServices('');
+                      },
+                      child: Text(
+                        (index + 1).toString(),
+                        style: TextStyle(color: color, fontSize: 18),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -263,7 +289,7 @@ class _MainPageState extends State<MainPage> {
     http
         .get(
           Uri.parse(
-            '${MyConfig.baseUrl}/api/load_service.php?search=$searchQuery',
+            '${MyConfig.baseUrl}/api/load_service.php?search=$searchQuery&curpage=$curpage',
           ),
         )
         .then((response) {
@@ -277,8 +303,17 @@ class _MainPageState extends State<MainPage> {
               // has data → load to list
               listServices.clear();
               for (var item in jsonResponse['data']) {
+                //add the data into listservices using method add.
+
                 listServices.add(MyService.fromJson(item));
               }
+
+              numofpage = int.parse(jsonResponse['numofpage'].toString());
+              numofresult = int.parse(
+                jsonResponse['numberofresult'].toString(),
+              );
+              print(numofpage);
+              print(numofresult);
 
               setState(() {
                 status = "";
@@ -353,7 +388,7 @@ class _MainPageState extends State<MainPage> {
                 children: [
                   SizedBox(
                     child: Image.network(
-                      '${MyConfig.baseUrl}/assets/services/service_${listServices[index].serviceId}.PNG',
+                      '${MyConfig.baseUrl}/assets/services/service_${listServices[index].serviceId}.png',
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return const Icon(

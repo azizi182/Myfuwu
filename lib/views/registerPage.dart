@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:myfuwu_project/views/ipAddress.dart';
 import 'package:myfuwu_project/views/loginPage.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 
 class Registerpage extends StatefulWidget {
   const Registerpage({super.key});
@@ -16,12 +18,16 @@ class _RegisterpageState extends State<Registerpage> {
   late double screenHeight, screenWidth;
   bool visible = true;
   bool loading = false;
+  String address = "";
+
+  late Position mypostion;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +44,13 @@ class _RegisterpageState extends State<Registerpage> {
     }
 
     print(screenWidth);
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: Text('Register Page'),
+      appBar: AppBar(title: Text('Register Page'), actions: [
+          
+        ],
       ),
+
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -84,6 +92,33 @@ class _RegisterpageState extends State<Registerpage> {
                     decoration: InputDecoration(
                       labelText: 'Phone Number',
                       border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+
+                  TextField(
+                    maxLines: 3,
+                    controller: addressController,
+                    decoration: InputDecoration(
+                      labelText: 'Address',
+                      border: OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        onPressed: () async {
+                          mypostion = await _determinePosition();
+                          print(mypostion.latitude);
+                          print(mypostion.longitude);
+                          List<Placemark> placemarks =
+                              await placemarkFromCoordinates(
+                                mypostion.latitude,
+                                mypostion.longitude,
+                              );
+                          Placemark place = placemarks[0];
+                          addressController.text =
+                              "${place.name},\n${place.street},\n${place.postalCode},${place.locality},\n${place.administrativeArea},${place.country}";
+                          setState(() {});
+                        },
+                        icon: Icon(Icons.location_on),
+                      ),
                     ),
                   ),
                   SizedBox(height: 10),
@@ -190,6 +225,22 @@ class _RegisterpageState extends State<Registerpage> {
       return;
     }
 
+    //check textfield
+    if (addressController.text.isEmpty) {
+      SnackBar snackBar = const SnackBar(
+        content: Text('Please enter an address'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+    if (mypostion.latitude.isNaN || mypostion.longitude.isNaN) {
+      SnackBar snackBar = const SnackBar(
+        content: Text('Please select an address'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -210,6 +261,44 @@ class _RegisterpageState extends State<Registerpage> {
         ],
       ),
     );
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
   }
 
   void registerUser(
@@ -238,6 +327,7 @@ class _RegisterpageState extends State<Registerpage> {
     );
     //print("registering user... $email, $password");
     // database server
+
     await http // wait to the complete first , to avoid crash.
         .post(
           // to post data to backend
@@ -247,6 +337,9 @@ class _RegisterpageState extends State<Registerpage> {
             "phone": phone,
             "email": email, // parameters to send to backend
             "password": password,
+            "address": addressController.text,
+            "latitude": mypostion.latitude.toString(),
+            "longitude": mypostion.longitude.toString(),
           },
         )
         .then((response) {
@@ -257,7 +350,7 @@ class _RegisterpageState extends State<Registerpage> {
             var msgArray = jsonDecode(
               jsonResponse,
             ); // convert from json type(backend) to array msg (frontend)
-
+            log(jsonResponse);
             // the array yg nak check.
             if (msgArray['status'] == "success") {
               if (!mounted) return;

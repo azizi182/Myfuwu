@@ -79,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen> {
         password = prefs.getString('password') ?? 'NA';
         http
             .post(
-              Uri.parse('${MyConfig.baseUrl}/myfuwu/api/login.php'),
+              Uri.parse('${MyConfig.baseUrl}/api/login_user.php'),
               body: {
                 'email': email,
                 'password': password,

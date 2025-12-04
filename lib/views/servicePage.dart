@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -26,9 +25,9 @@ class _MyServicePageState extends State<MyServicePage> {
 
   String selectedservice = 'Cleaning';
   String selecteddistrict = 'Kubang Pasu';
-  File? image;
+  File? image; // for mobile and desktop
   late double height, width;
-  Uint8List? webImage;
+  Uint8List? webImage; // for web only
 
   List<String> myservices = [
     'Cleaning',

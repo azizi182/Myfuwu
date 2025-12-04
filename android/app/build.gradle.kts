@@ -6,8 +6,8 @@ plugins {
 }
 
 android {
-    namespace = "com.example.myfuwu_project"
-    compileSdk = flutter.compileSdkVersion
+    namespace = "com.example.myfuwu_project"  
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
