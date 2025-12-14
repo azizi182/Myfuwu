@@ -88,6 +88,7 @@ class _EditServicePageState extends State<EditServicePage> {
                         // pickimagedialog();
                       }
                     },
+
                     child: Container(
                       width: width,
                       height: height / 3,
@@ -102,6 +103,7 @@ class _EditServicePageState extends State<EditServicePage> {
                             offset: const Offset(0, 2),
                           ),
                         ],
+
                         image: (image != null && !kIsWeb)
                             ? DecorationImage(
                                 image: FileImage(image!),
@@ -138,6 +140,7 @@ class _EditServicePageState extends State<EditServicePage> {
                           : null,
                     ),
                   ),
+
                   SizedBox(height: 10),
                   TextField(
                     controller: titleController,
@@ -146,6 +149,7 @@ class _EditServicePageState extends State<EditServicePage> {
                       border: OutlineInputBorder(),
                     ),
                   ),
+
                   SizedBox(height: 10),
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
@@ -188,6 +192,7 @@ class _EditServicePageState extends State<EditServicePage> {
                       });
                     },
                   ),
+
                   SizedBox(height: 10),
                   TextField(
                     controller: hourlyrateController,
@@ -197,6 +202,7 @@ class _EditServicePageState extends State<EditServicePage> {
                       border: OutlineInputBorder(),
                     ),
                   ),
+
                   SizedBox(height: 10),
                   TextField(
                     controller: descriptionController,
@@ -206,6 +212,7 @@ class _EditServicePageState extends State<EditServicePage> {
                     ),
                     maxLines: 3,
                   ),
+
                   SizedBox(height: 10),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(

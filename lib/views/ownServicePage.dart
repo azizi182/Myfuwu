@@ -89,6 +89,7 @@ class _OwnservicepageState extends State<Ownservicepage> {
                                     child: Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
+
                                       children: [
                                         // IMAGE
                                         ClipRRect(
@@ -104,7 +105,7 @@ class _OwnservicepageState extends State<Ownservicepage> {
                                                 0.22, // balanced aspect ratio
                                             color: Colors.grey[200],
                                             child: Image.network(
-                                              '${MyConfig.baseUrl}/myfuwu/assets/services/service_${myServices[index].serviceId}.png',
+                                              '${MyConfig.baseUrl}/assets/services/service_${myServices[index].serviceId}.png',
                                               fit: BoxFit.cover,
                                               errorBuilder:
                                                   (context, error, stackTrace) {
@@ -229,6 +230,7 @@ class _OwnservicepageState extends State<Ownservicepage> {
             ),
 
       drawer: Mydrawer(user: widget.user),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           // Action for the button
@@ -263,7 +265,7 @@ class _OwnservicepageState extends State<Ownservicepage> {
     http
         .get(
           Uri.parse(
-            '${MyConfig.baseUrl}/myfuwu/api/load_user_services.php?userid=${widget.user!.userId} ',
+            '${MyConfig.baseUrl}/api/load_user_service.php?userid=${widget.user!.userId} ',
           ),
         )
         .then((response) {
@@ -315,7 +317,7 @@ class _OwnservicepageState extends State<Ownservicepage> {
   void deleteService(int index) {
     http
         .post(
-          Uri.parse('${MyConfig.baseUrl}/myfuwu/api/delete_service.php'),
+          Uri.parse('${MyConfig.baseUrl}/api/delete_service.php'),
           body: {
             'userid': widget.user!.userId.toString(),
             'serviceid': myServices[index].serviceId.toString(),
@@ -326,6 +328,7 @@ class _OwnservicepageState extends State<Ownservicepage> {
           if (response.statusCode == 200) {
             var jsonResponse = response.body;
             var resarray = jsonDecode(jsonResponse);
+
             if (resarray['status'] == 'success') {
               loaduserservices();
               ScaffoldMessenger.of(context).showSnackBar(
